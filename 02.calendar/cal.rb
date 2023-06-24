@@ -11,11 +11,12 @@ opt.on('-m [value]','this parameter is month') {|v| params[:month] = v }
 opt.on('-y [value]','this parameter is year') {|v| params[:year] = v }
 opt.parse!(ARGV)
 
-def stdout_alert
+def stdout_alertg
   puts 'Alert'
   exit
 end
 
+# -y オプション単独使用は許容しない
 if params[:month].nil? && !params[:year].nil?
   stdout_alert
 end
@@ -23,38 +24,30 @@ end
 params[:month] ||= Date.today.month.to_s
 params[:year] ||= Date.today.year.to_s
 
-
-=begin
-まずさきに↓をやる。並行タスクになってきた
-- 年月ラベル \n 曜日ラベル \n 日付n週目 を表示する（≒カレンダーを表示する）
-- 見た目をそろえる
--  年月ラベルを中央寄せする
-***todo ******
-- 1桁日付と2桁日付のY軸をそろえる
-- 曜日ラベルと1桁日付のY軸をそろえる
-- 1日が日曜以外の時は、前方に空白をいれる。
-  - 日付の出力エリアは6列を確保する。
-
-=end
 def stdout_calender(params)
   lbl_month_year = "#{params[:month]}月 #{params[:year]}".center(20," ")
 
-  # Todo:show calendr 
   lbl_weekdays = ["日","月","火","水","木","金","土"].join(" ")
 
-  #days_of_current_month = (Date.new(params[:year].to_i,params[:month].to_i,1)..Date.new(params[:year].to_i,params[:month].to_i,-1)).map {|ymd| p ymd.day}
-  stdout_days = []
-  (Date.new(params[:year].to_i,params[:month].to_i,1)..Date.new(params[:year].to_i,params[:month].to_i,-1)).each do |ymd|
-    stdout_day = ymd.day.to_s
-    if ymd.saturday?
-      stdout_day = stdout_day + "\n"
+  num_of_displayrow = 6
+  num_of_leading_blank = Date.new(params[:year].to_i,params[:month].to_i,1).wday
+  num_of_trailing_blank = Date::DAYNAMES.size * num_of_displayrow - Date.new(params[:year].to_i, params[:month].to_i, -1).day - num_of_leading_blank
+  
+  # Todo：1週目だけ日付の横位置がずれる。対象月によっては0週目が出力される（例：202304）
+  day_of_month = (Date.new(params[:year].to_i,params[:month].to_i,1)..Date.new(params[:year].to_i,params[:month].to_i,-1)).to_a
+  day_of_month = Array.new(num_of_leading_blank," ") + day_of_month.map do |ymd|
+    if ymd.is_a?(Date)
+      ymd.day.to_s.rjust(2," ")
+    else
+      ymd.rjust(2," ")
     end
-    stdout_days.push(stdout_day)
   end
+  day_of_month = Array.new(num_of_leading_blank," " * 2) + day_of_month 
+  day_of_month = day_of_month + (Array.new(num_of_trailing_blank," "))
 
   puts lbl_month_year
   puts lbl_weekdays
-  puts stdout_days.join(" ")
+  (0..(num_of_displayrow - 1)).each { |num_row| puts day_of_month[num_row * 7,7].join(" ") }
 end
 
 stdout_calender(params)
