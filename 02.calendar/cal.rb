@@ -11,7 +11,7 @@ opt.on('-m [value]','this parameter is month') {|v| params[:month] = v }
 opt.on('-y [value]','this parameter is year') {|v| params[:year] = v }
 opt.parse!(ARGV)
 
-def stdout_alertg
+def stdout_alert
   puts 'Alert'
   exit
 end
@@ -30,24 +30,18 @@ def stdout_calender(params)
   lbl_weekdays = ["日","月","火","水","木","金","土"].join(" ")
 
   num_of_displayrow = 6
+  num_of_displaycol = Date::DAYNAMES.size
   num_of_leading_blank = Date.new(params[:year].to_i,params[:month].to_i,1).wday
-  num_of_trailing_blank = Date::DAYNAMES.size * num_of_displayrow - Date.new(params[:year].to_i, params[:month].to_i, -1).day - num_of_leading_blank
+  num_of_trailing_blank = num_of_displaycol * num_of_displayrow - Date.new(params[:year].to_i, params[:month].to_i, -1).day - num_of_leading_blank
   
-  # Todo：1週目だけ日付の横位置がずれる。対象月によっては0週目が出力される（例：202304）
   day_of_month = (Date.new(params[:year].to_i,params[:month].to_i,1)..Date.new(params[:year].to_i,params[:month].to_i,-1)).to_a
-  day_of_month = Array.new(num_of_leading_blank," ") + day_of_month.map do |ymd|
-    if ymd.is_a?(Date)
-      ymd.day.to_s.rjust(2," ")
-    else
-      ymd.rjust(2," ")
-    end
-  end
-  day_of_month = Array.new(num_of_leading_blank," " * 2) + day_of_month 
-  day_of_month = day_of_month + (Array.new(num_of_trailing_blank," "))
+  day_of_month = day_of_month.map { |ymd| ymd.day.to_s.rjust(2," ") }
+  day_of_month = Array.new(num_of_leading_blank," ".rjust(2," ")) + day_of_month 
+  day_of_month = day_of_month + (Array.new(num_of_trailing_blank," ".rjust(2," ")))
 
   puts lbl_month_year
   puts lbl_weekdays
-  (0..(num_of_displayrow - 1)).each { |num_row| puts day_of_month[num_row * 7,7].join(" ") }
-end
+  num_of_displayrow.times { |num_row| puts day_of_month[num_row * num_of_displaycol,num_of_displaycol].join(" ")}
+ end
 
 stdout_calender(params)
