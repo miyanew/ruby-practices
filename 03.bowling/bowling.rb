@@ -1,19 +1,23 @@
 #!/usr/bin/env ruby
+# frozen_string_literal: false
 
 score = ARGV[0]
 scores = score.split(',')
+
+# スコア を 倒したピン数 に変換する
 shots = []
 scores.each do |s|
-  if s == 'X' && shots.size < 18
+  if s == 'X' && shots.size < (9 * 2) # 9フレーム目までのストライク
     shots << 10
-    shots << 0
-  elsif s == 'X'
+    shots << nil
+  elsif s == 'X' # 10フレーム目のストライク
     shots << 10
   else
     shots << s.to_i
   end
 end
 
+# 倒したピン数をフレーム毎に分ける。10フレーム目に3投した場合、11フレームが出現するので補正する。
 frames = []
 shots.each_slice(2) do |s|
   frames << s
@@ -25,15 +29,15 @@ if frames.size > 10
   frames = frames_tmp
 end
 
+# 倒したピンの総数とボーナス点を加算して合計点をだす。ボーナス点があるのは9フレーム目まで。
 point = 0
-frames.each do |frame|
-  if frame[0] == 10 # strike
-    point += 30
-  elsif frame.sum == 10 # spare
-    point += frame[0] + 10
-  else
-    point += frame.sum
+frames.each_with_index do |frame, idx|
+  if (idx < 9) && (frame[0] == 10) # strike bonus
+    shots_future = frames[(idx + 1)..].flatten.delete_if(&:nil?)
+    point += shots_future[0..1].sum
+  elsif (idx < 9) && (frame[0] != 10) && (frame.sum == 10) # spare bonus
+    point += frames[idx + 1][0]
   end
+  point += frame.delete_if(&:nil?).sum
 end
 puts point
-
