@@ -3,8 +3,8 @@
 require 'minitest/autorun'
 require_relative 'bowling'
 
-BEGIN{
-  ARGV[0] = "6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,6,4,5"
+BEGIN {
+  ARGV[0] = '6,3,9,0,0,3,8,2,7,3,X,9,1,8,0,X,6,4,5'
 }
 
 class TestBowlingScoreCalculation < Minitest::Test
@@ -14,7 +14,7 @@ class TestBowlingScoreCalculation < Minitest::Test
   end
 
   def test_last_frame_is_perfect
-    scores = [6, 3, 9, 0, 0, 3, 8, 2, 7, 3, 'X', 9, 1, 8, 0,'X','X','X','X']
+    scores = [6, 3, 9, 0, 0, 3, 8, 2, 7, 3, 'X', 9, 1, 8, 0, 'X', 'X', 'X', 'X']
     assert_equal 164, score_calculation(scores)
   end
 

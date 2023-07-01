@@ -17,19 +17,19 @@ def score_calculation(scores)
       shots << s.to_i
     end
   end
-  
+
   # 倒したピン数をフレーム毎に分ける。10フレーム目に3投した場合、11フレームが出現するので補正する。
   frames = []
   shots.each_slice(2) do |s|
     frames << s
   end
-  
+
   if frames.size > 10
     frames_tmp = frames[0..8]
     frames_tmp << frames[-2] + frames[-1]
     frames = frames_tmp
   end
-  
+
   # 倒したピンの総数とボーナス点を加算して合計点をだす。ボーナス点があるのは9フレーム目まで。
   point = 0
   frames.each_with_index do |frame, idx|
