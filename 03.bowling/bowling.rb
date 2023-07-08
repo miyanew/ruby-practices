@@ -1,31 +1,24 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: false
 
-STRIKE_SCORES = 10
+STRIKE_SCORES = 'X'.freeze
+STRIKE_POINT = 10
 
 # ボウリングの10フレーム分のスコアから合計得点を算出する
 def calculate_score(scores)
-  # スコア を 倒したピン数 に変換する
-  shots = []
-  scores.each do |s|
-    if s == 'X' && shots.size < (9 * 2) # 9フレーム目までのストライク
-      shots << STRIKE_SCORES
-      shots << nil
-    elsif s == 'X' # 10フレーム目のストライク
-      shots << STRIKE_SCORES
+  strike_or_otherwise = scores.slice_when { |i, j| [i, j].include?(STRIKE_SCORES) }
+
+  # ストライクなら1投、それ以外は2投の結果をフレームごとにArray型でセットし、二次元配列にする。
+  frames = strike_or_otherwise.flat_map do |frame|
+    if frame.include?(STRIKE_SCORES)
+      [[STRIKE_POINT]]
     else
-      shots << s.to_i
+      frame.map(&:to_i).each_slice(2).to_a
     end
   end
 
-  # 倒したピン数をフレーム毎に分ける。10フレーム目に3投した場合、11フレームが出現するので補正する。
-  frames = shots.each_slice(2).map(&:compact)
-
-  if frames.size > 10
-    frames_tmp = frames[0..8]
-    frames_tmp << frames[-2] + frames[-1]
-    frames = frames_tmp
-  end
+  # 10フレーム目にストライクがでた場合、11フレーム以降の結果としてセットされてしまうので10フレームにおさめる。
+  frames = frames[0..8].push(frames[9..].flatten) if frames.size > 10
 
   # 倒したピンの総数とボーナス点を加算して合計点をだす。ボーナス点があるのは9フレーム目まで。
   point = 0
