@@ -23,15 +23,15 @@ def calculate_score(scores)
   # 倒したピンの総数とボーナス点を加算して合計点をだす。ボーナス点があるのは9フレーム目まで。
   point = 0
   frames.each_with_index do |frame, idx|
-    if idx < 9
-      if frame[0] == 10 # strike bonus
-        shots_future = frames[(idx + 1)..].flatten
-        point += shots_future[0..1].sum
-      elsif frame.sum == 10 # spare bonus
-        point += frames[idx + 1][0]
-      end
-    end
     point += frame.sum
+    next if idx == 10
+
+    if frame[0] == 10 # strike bonus
+      shots_future = frames[(idx + 1)..].flatten
+      point += shots_future[0..1].sum
+    elsif frame.sum == 10 # spare bonus
+      point += frames[idx + 1][0]
+    end
   end
   point
 end
