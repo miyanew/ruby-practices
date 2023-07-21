@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: false
+
 require 'optparse'
 
 # lsコマンド
@@ -14,8 +15,20 @@ WIDTH_BETWEEN_ITMES = 7
 def main(options)
   options[:path] = Dir.pwd if options[:path].nil?
 
-  Dir.chdir(options[:path])
-  filenames = Dir.glob('*')
+  unless File.exist?(options[:path])
+    puts "ls: #{options[:path]}: No such file or directory"
+    exit
+  end
+
+  filenames = []
+  if File.directory?(options[:path])
+    Dir.chdir(options[:path])
+    filenames = Dir.glob('*')
+  else
+    Dir.chdir(File.dirname(options[:path]))
+    filenames << options[:path]
+  end
+
   show_filenames(filenames)
 end
 
