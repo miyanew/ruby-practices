@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: false
+require 'optparse'
 
 # lsコマンド
 #   Done: ph1 オプション無で作る ファイル名を表示、昇順
@@ -14,7 +15,7 @@ def main(options)
   options[:path] = Dir.pwd if options[:path].nil?
 
   Dir.chdir(options[:path])
-  filenames = Dir.glob('*', sort: true)
+  filenames = Dir.glob('*')
   show_filenames(filenames)
 end
 
@@ -27,8 +28,8 @@ def show_filenames(filenames)
     show_line = []
     MAX_COL_SIZE.times do |j|
       show_line << margined_filenames[i + max_row_size * j] unless margined_filenames[i + max_row_size * j].nil?
-      puts show_line.join('') if j == MAX_COL_SIZE - 1
     end
+    puts show_line.join('')
   end
 end
 
@@ -38,7 +39,6 @@ def add_margin_right_of_items(filenames)
 end
 
 if $PROGRAM_NAME == __FILE__
-  require 'optparse'
   opt = OptionParser.new
 
   params = {}
