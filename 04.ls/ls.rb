@@ -24,7 +24,8 @@ def main(options)
   filenames = []
   if File.directory?(options[:path])
     Dir.chdir(options[:path])
-    filenames = options[:a] ? Dir.glob('*', File::FNM_DOTMATCH) : Dir.glob('*')
+    flags = options[:a] ? File::FNM_DOTMATCH : 0
+    filenames = Dir.glob('*', flags)
   else
     Dir.chdir(File.dirname(options[:path]))
     filenames << options[:path]
