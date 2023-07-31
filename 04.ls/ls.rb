@@ -86,30 +86,30 @@ end
 
 def show_file_metadatas(file_metadatas, parampath_is_directory)
   puts "total #{file_metadatas.select.map.sum { |md| md[:blocks] }}" if parampath_is_directory
-
-  space = ' '
   file_metadatas.each do |md|
-    show_line = ''
-    show_line << md[:ftype]
-    show_line << md[:permission_str]
-    show_line << space * 2
-    show_line << md[:nlink].to_s.rjust(calc_max_width(file_metadatas, :nlink), space)
-    show_line << space
-    show_line << md[:uname].to_s.ljust(calc_max_width(file_metadatas, :uname), space)
-    show_line << space * 2
-    show_line << md[:gname].to_s.ljust(calc_max_width(file_metadatas, :gname), space)
-    show_line << space * 2
-    show_line << md[:size].to_s.rjust(calc_max_width(file_metadatas, :size), space)
-    show_line << space * 2
-    show_line << md[:mtime].strftime('%m').to_i.to_s
-    show_line << space
-    show_line << md[:mtime].strftime('%e')
-    show_line << space
-    show_line << md[:mtime].strftime('%H:%M')
-    show_line << space
-    show_line << md[:basename]
-    puts show_line
+    puts show_metadata(md, file_metadatas)
   end
+end
+
+def show_metadata(metadata, metadatas)
+  space = ' '
+  show_line = ''
+  show_line << metadata[:ftype]
+  show_line << metadata[:permission_str]
+  show_line << space * 2
+  show_line << metadata[:nlink].to_s.rjust(calc_max_width(metadatas, :nlink), space)
+  show_line << space
+  show_line << metadata[:uname].to_s.ljust(calc_max_width(metadatas, :uname), space)
+  show_line << space * 2
+  show_line << metadata[:gname].to_s.ljust(calc_max_width(metadatas, :gname), space)
+  show_line << space * 2
+  show_line << metadata[:size].to_s.rjust(calc_max_width(metadatas, :size), space)
+  show_line << space * 2
+  show_line << metadata[:mtime].strftime('%m').to_i.to_s
+  show_line << space
+  show_line << metadata[:mtime].strftime('%e %H:%M')
+  show_line << space
+  show_line << metadata[:basename]
 end
 
 def calc_max_width(metadatas, key_metadata)
