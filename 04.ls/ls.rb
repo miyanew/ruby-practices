@@ -5,7 +5,7 @@ require 'optparse'
 
 # lsコマンド
 #   Done: ph1 オプション無で作る ファイル名を表示、昇順
-#   Todo: ph2 -aオプションを作る 隠しファイルを表示
+#   doing: ph2 -aオプションを作る 隠しファイルを表示
 #   Todo: ph3 -rオプションを作る 逆順(ファイル名)で表示
 #   Todo: ph4 -lオプションを作る 各種情報を表示 & ファイルの合計ブロックサイズ
 #   Todo: ph5 これまでの全ての機能をもったlsを作る
@@ -13,7 +13,8 @@ MAX_COL_SIZE = 3
 WIDTH_BETWEEN_ITMES = 7
 
 def main(options)
-  options[:path] = Dir.pwd if options[:path].nil?
+  options[:path] = options[:path] ||= Dir.pwd
+  options[:a]    = options[:a] ||= false
 
   unless File.exist?(options[:path])
     puts "ls: #{options[:path]}: No such file or directory"
@@ -23,7 +24,8 @@ def main(options)
   filenames = []
   if File.directory?(options[:path])
     Dir.chdir(options[:path])
-    filenames = Dir.glob('*')
+    flags = options[:a] ? File::FNM_DOTMATCH : 0
+    filenames = Dir.glob('*', flags)
   else
     Dir.chdir(File.dirname(options[:path]))
     filenames << options[:path]
@@ -55,6 +57,7 @@ if $PROGRAM_NAME == __FILE__
   opt = OptionParser.new
 
   params = {}
+  opt.on('-a') { |v| params[:a] = v }
   opt.parse!(ARGV)
   params[:path] = ARGV[0]
 
