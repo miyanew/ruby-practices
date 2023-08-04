@@ -9,7 +9,7 @@ require 'etc'
 #   Done: ph2 -aオプションを作る 隠しファイルを表示
 #   Done: ph3 -rオプションを作る 逆順(ファイル名)で表示
 #   Done: ph4 -lオプションを作る 各種情報を表示 & ファイルの合計ブロックサイズ
-#   Todo: ph5 これまでの全ての機能をもったlsを作る
+#   Done: ph5 これまでの全ての機能をもったlsを作る
 MAX_COL_SIZE = 3
 WIDTH_BETWEEN_ITMES = 7
 
@@ -26,15 +26,7 @@ def main(options)
 
   filenames = collect_filenames(options)
   filenames = filenames.reverse if options[:r]
-
-  if options[:l]
-    parentpath = File.directory?(options[:path]) ? options[:path] : File.dirname(options[:path])
-    fullpaths = filenames.map { |fn| File.join(parentpath, fn) }
-    file_metadatas = collect_file_metadatas(fullpaths)
-    show_file_metadatas(file_metadatas, File.directory?(options[:path]))
-  else
-    show_filenames(filenames)
-  end
+  show_fileparams(filenames, options)
 end
 
 def collect_filenames(options)
@@ -87,6 +79,17 @@ def convert_permission_bin_to_str(perm_bin)
   perm_str << (perm_bin[0].to_i.zero? ? '-' : 'r')
   perm_str << (perm_bin[1].to_i.zero? ? '-' : 'w')
   perm_str << (perm_bin[2].to_i.zero? ? '-' : 'x')
+end
+
+def show_fileparams(filenames, options)
+  if options[:l]
+    parentpath = File.directory?(options[:path]) ? options[:path] : File.dirname(options[:path])
+    fullpaths = filenames.map { |fn| File.join(parentpath, fn) }
+    file_metadatas = collect_file_metadatas(fullpaths)
+    show_file_metadatas(file_metadatas, File.directory?(options[:path]))
+  else
+    show_filenames(filenames)
+  end
 end
 
 def show_file_metadatas(file_metadatas, parampath_is_directory)
