@@ -13,35 +13,25 @@ def main(args)
   options[:c]         = args[:c] ||= false
 
   input_lines = []
-  # count_result = []
-  # input_lines = collect_input(options[:filepaths])
-  # collect_input(filepaths)
-
-  if is_file_specified(options[:filepaths])
+  if options[:filepaths].size.zero?
+    stdin = {}
+    stdin[:filepath] = nil
+    stdin[:body] = readlines.map(&:chomp)
+    input_lines << stdin
+  else
     options[:filepaths].each do |fp|
       input_file = {}
       input_file[:filepath] = fp
       input_file[:body] = File.open(fp){|f| f.readlines.map(&:chomp)}
       input_lines << input_file
     end
-  else
-    stdin = {}
-    stdin[:filepath] = nil
-    stdin[:body] = readlines.map(&:chomp)
-    input_lines << stdin
   end
 
-  # puts input_lines[0][:body].class #Array、もしreadlinesでto_sすると -> Sting
-  
   input_lines.each do |line|
     count_input_lines(line)
   end
 
   show_result(input_lines)
-end
-
-def is_file_specified(input_lines)
-  !input_lines.size.zero?
 end
 
 def count_input_lines(line_params)
@@ -70,23 +60,29 @@ def count_bytesize_with_linefeed(input_line)
 end
 
 def show_result(input_lines)
-  if input_lines[0][:filepath].nil?
-    space = ' '
-    lines_sum = input_lines[0][:lines_count].to_s.rjust(WIDTH_SUM_VALUES, space)
-    words_sum = input_lines[0][:words_count].to_s.rjust(WIDTH_SUM_VALUES, space)
-    bytes_sum = input_lines[0][:bytes_count].to_s.rjust(WIDTH_SUM_VALUES, space)
+  input_lines.each do |input_line|
+    lines_sum = adjust_show_width(input_line[:lines_count])
+    words_sum = adjust_show_width(input_line[:words_count])
+    bytes_sum = adjust_show_width(input_line[:bytes_count])
 
-    show_line = ''
-    show_line << lines_sum
-    show_line << words_sum
-    show_line << bytes_sum
+    show_line = "#{lines_sum}#{words_sum}#{bytes_sum}"
+    show_line << " #{input_line[:filepath]}" unless input_line[:filepath].nil?
     puts show_line
   end
 
-  #words_sum = input_lines.map {|ret| ret[:words_count]}.to_s.rjust(WIDTH_SUM_VALUES, space)
-  #bytes_sum = input_lines.map {|ret| ret[:bytes_count]}.to_s.rjust(WIDTH_SUM_VALUES, space)
+  if input_lines.size > 1
+    lines_sum_total = adjust_show_width(input_lines.map.sum { |line| line[:lines_count]})
+    words_sum_total = adjust_show_width(input_lines.map.sum { |line| line[:words_count]})
+    bytes_sum_total = adjust_show_width(input_lines.map.sum { |line| line[:bytes_count]})
 
+    show_line = "#{lines_sum_total}#{words_sum_total}#{bytes_sum_total} total"
+    puts show_line
+  end
+end
 
+def adjust_show_width(sum_string)
+  space = ' '
+  sum_string.to_s.rjust(WIDTH_SUM_VALUES, space)
 end
 
 if $PROGRAM_NAME == __FILE__
