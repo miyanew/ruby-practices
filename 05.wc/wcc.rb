@@ -107,6 +107,7 @@ def build_show_item(show_item, options)
     show_line << show_item[:words].to_s if options[:w]
     show_line << show_item[:bytes].to_s if options[:c]
   end
+  show_line
 end
 
 if $PROGRAM_NAME == __FILE__
