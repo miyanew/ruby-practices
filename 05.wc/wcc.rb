@@ -20,7 +20,7 @@ def main(args)
 
   input_params = correct_inputs(options[:filepaths])
   input_params = count_inputs(input_params)
-  show_result(input_params)
+  show_result(input_params, options)
 end
 
 def correct_inputs(filepaths)
@@ -68,30 +68,45 @@ def count_bytesize_with_linefeed(input_line)
   input_line.bytesize + "\n".bytesize
 end
 
-def show_result(count_results)
+def show_result(count_results, options)
   count_results.each do |count_result|
-    lines_sum = adjust_show_width(count_result[:lines_count])
-    words_sum = adjust_show_width(count_result[:words_count])
-    bytes_sum = adjust_show_width(count_result[:bytes_count])
+    show_item = {}
+    show_item[:lines] = adjust_show_width(count_result[:lines_count])
+    show_item[:words] = adjust_show_width(count_result[:words_count])
+    show_item[:bytes] = adjust_show_width(count_result[:bytes_count])
+    show_item[:filepath] = count_result[:filepath]
 
-    show_line = "#{lines_sum}#{words_sum}#{bytes_sum}"
-    show_line << " #{count_result[:filepath]}" unless count_result[:filepath].nil?
+    show_line = build_show_item(show_item, options)
+    show_line << " #{show_item[:filepath]}" unless show_item[:filepath].nil?
     puts show_line
   end
 
   return unless count_results.size > 1
 
-  lines_sum_total = adjust_show_width(count_results.map.sum { |line| line[:lines_count] })
-  words_sum_total = adjust_show_width(count_results.map.sum { |line| line[:words_count] })
-  bytes_sum_total = adjust_show_width(count_results.map.sum { |line| line[:bytes_count] })
+  show_item = {}
+  show_item[:lines] = adjust_show_width(count_results.map.sum { |line| line[:lines_count] })
+  show_item[:words] = adjust_show_width(count_results.map.sum { |line| line[:words_count] })
+  show_item[:bytes] = adjust_show_width(count_results.map.sum { |line| line[:bytes_count] })
 
-  show_line = "#{lines_sum_total}#{words_sum_total}#{bytes_sum_total} total"
+  show_line = build_show_item(show_item, options)
+  show_line << ' total'
   puts show_line
 end
 
 def adjust_show_width(sum_string)
   space = ' '
   sum_string.to_s.rjust(WIDTH_SUM_VALUES, space)
+end
+
+def build_show_item(show_item, options)
+  show_line = ''
+  if !options[:l] && !options[:w] && !options[:c]
+    show_line << "#{show_item[:lines]}#{show_item[:words]}#{show_item[:bytes]}"
+  else
+    show_line << show_item[:lines].to_s if options[:l]
+    show_line << show_item[:words].to_s if options[:w]
+    show_line << show_item[:bytes].to_s if options[:c]
+  end
 end
 
 if $PROGRAM_NAME == __FILE__
