@@ -3,9 +3,8 @@
 
 require 'optparse'
 
-WIDTH_SUM_VALUES = 8
+WIDTH_SUM_VALUE = 8
 
-# Rubyでつくるwcコマンド
 def main(args)
   options = {}
   options[:filepaths] = args[:filepaths] || args[:filepaths] = false
@@ -13,85 +12,72 @@ def main(args)
   options[:w]         = args[:w] || args[:w] = false
   options[:c]         = args[:c] || args[:c] = false
 
-  standard_inputs = collect_inputs(options[:filepaths])
-  totals_for_stdin = count_inputs(standard_inputs)
-  show_result(totals_for_stdin, options)
-end
-
-def collect_inputs(filepaths)
-  if filepaths.empty?
-    stdin = {
-      filepath: nil,
-      body: readlines
-    }
-    [stdin]
+  if options[:filepaths].empty?
+    show_totals_pipe_input(options)
   else
-    filepaths.map do |fp|
-      {
-        filepath: fp,
-        body: File.open(fp).readlines
-      }
-    end
+    show_totals_file_input(options)
   end
 end
 
-def count_inputs(standard_inputs)
-  standard_inputs.map do |stdin|
-    {
-      source: stdin[:filepath] || stdin[:filepath] = nil,
-      lines_count: stdin[:body].size,
-      words_count: stdin[:body].join.split("\s").size,
-      bytes_count: stdin[:body].join.bytesize
-    }
-  end
+def show_totals_pipe_input(options)
+  input_totals = count_input(readlines.join)
+  show_result(input_totals, options)
 end
 
-def show_result(count_results, options)
-  count_results.each do |count_result|
-    counted_target = count_result[:source] if show_filepath?(options)
-    puts build_show_item(count_result, counted_target, options)
+def show_totals_file_input(options)
+  input_totals_list = []
+  options[:filepaths].each do |fp|
+    input_totals = count_input(File.open(fp).readlines.join)
+    show_result(input_totals, options, fp)
+    input_totals_list << input_totals
   end
+  show_total(input_totals_list, options) if input_totals_list.size > 1
+end
 
-  return unless count_results.size > 1
-
-  count_results_sum = {
-    lines_count: count_results.sum { |ret| ret[:lines_count] },
-    words_count: count_results.sum { |ret| ret[:words_count] },
-    bytes_count: count_results.sum { |ret| ret[:bytes_count] }
+def count_input(input_readline)
+  {
+    lines_count: input_readline.split("\n").size,
+    words_count: input_readline.split("\s").size,
+    bytes_count: input_readline.bytesize
   }
+end
 
-  counted_target = 'total'
-  showed_line = build_show_item(count_results_sum, counted_target, options)
+def show_result(count_results, options, counted_target = nil)
+  showed_line = ''
+  showed_line += adjust_show_width(count_results[:lines_count]) if show_lines?(options)
+  showed_line += adjust_show_width(count_results[:words_count]) if show_words?(options)
+  showed_line += adjust_show_width(count_results[:bytes_count]) if show_bytes?(options)
+  showed_line += " #{counted_target}" unless counted_target.nil?
   puts showed_line
 end
 
-def build_show_item(count_result, counted_target, options)
-  showed_line = ''
-  showed_line += adjust_show_width(count_result[:lines_count]) if showed_lines?(options)
-  showed_line += adjust_show_width(count_result[:words_count]) if show_words?(options)
-  showed_line += adjust_show_width(count_result[:bytes_count]) if show_bytes?(options)
-  showed_line += " #{counted_target}" unless counted_target.nil?
-  showed_line
+def show_total(input_totals_list, options)
+  count_results_sum = {
+    lines_count: input_totals_list.sum { |ret| ret[:lines_count] },
+    words_count: input_totals_list.sum { |ret| ret[:words_count] },
+    bytes_count: input_totals_list.sum { |ret| ret[:bytes_count] }
+  }
+  show_result(count_results_sum, options, 'total')
 end
 
 def adjust_show_width(sum)
-  sum.to_s.rjust(WIDTH_SUM_VALUES)
+  sum.to_s.rjust(WIDTH_SUM_VALUE)
 end
 
-def showed_lines?(options)
-  options[:l] || (!options[:l] && !options[:w] && !options[:c])
+def show_all?(options)
+  !options[:l] && !options[:w] && !options[:c]
+end
+
+def show_lines?(options)
+  options[:l] || show_all?(options)
 end
 
 def show_words?(options)
-  options[:w] || (!options[:l] && !options[:w] && !options[:c])
+  options[:w] || show_all?(options)
 end
 
 def show_bytes?(options)
-  options[:c] || (!options[:l] && !options[:w] && !options[:c])
-end
-
-def show_filepath?(options)
-  !options[:filepaths].empty?
+  options[:c] || show_all?(options)
 end
 
 if $PROGRAM_NAME == __FILE__
