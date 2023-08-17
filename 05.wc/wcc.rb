@@ -3,7 +3,7 @@
 
 require 'optparse'
 
-WIDTH_SUM_VALUE = 8
+WIDTH = 8
 
 def main(args)
   options = {}
@@ -13,71 +13,59 @@ def main(args)
   options[:c]         = args[:c] || args[:c] = false
 
   if options[:filepaths].empty?
-    show_totals_pipe_input(options)
+    show_stats_pipe_input(options)
   else
-    show_totals_file_input(options)
+    show_stats_file_input(options)
   end
 end
 
-def show_totals_pipe_input(options)
-  input_totals = count_input(readlines.join)
-  show_result(input_totals, options)
+def show_stats_pipe_input(options)
+  input_stats = count_input(readlines.join)
+  show_result(input_stats, options)
 end
 
-def show_totals_file_input(options)
-  input_totals_list = []
+def show_stats_file_input(options)
+  input_stats_list = []
   options[:filepaths].each do |fp|
-    input_totals = count_input(File.open(fp).readlines.join)
-    show_result(input_totals, options, fp)
-    input_totals_list << input_totals
+    input_stats = count_input(File.read(fp))
+    show_result(input_stats, options, fp)
+    input_stats_list << input_stats
   end
-  show_total(input_totals_list, options) if input_totals_list.size > 1
+  show_total(input_stats_list, options) if input_stats_list.size > 1
 end
 
-def count_input(input_readline)
+def count_input(input_text)
   {
-    lines_count: input_readline.split("\n").size,
-    words_count: input_readline.split("\s").size,
-    bytes_count: input_readline.bytesize
+    lines_count: input_text.lines.size,
+    words_count: input_text.split("\s").size,
+    bytes_count: input_text.bytesize
   }
 end
 
 def show_result(count_results, options, counted_target = nil)
-  showed_line = ''
-  showed_line += adjust_show_width(count_results[:lines_count]) if show_lines?(options)
-  showed_line += adjust_show_width(count_results[:words_count]) if show_words?(options)
-  showed_line += adjust_show_width(count_results[:bytes_count]) if show_bytes?(options)
-  showed_line += " #{counted_target}" unless counted_target.nil?
-  puts showed_line
+  line = ''
+  line += adjust_width(count_results[:lines_count]) if options[:l] || show_all?(options)
+  line += adjust_width(count_results[:words_count]) if options[:w] || show_all?(options)
+  line += adjust_width(count_results[:bytes_count]) if options[:c] || show_all?(options)
+  line += " #{counted_target}" unless counted_target.nil?
+  puts line
 end
 
-def show_total(input_totals_list, options)
-  count_results_sum = {
-    lines_count: input_totals_list.sum { |ret| ret[:lines_count] },
-    words_count: input_totals_list.sum { |ret| ret[:words_count] },
-    bytes_count: input_totals_list.sum { |ret| ret[:bytes_count] }
+def show_total(input_stats_list, options)
+  totals = {
+    lines_count: input_stats_list.sum { |ret| ret[:lines_count] },
+    words_count: input_stats_list.sum { |ret| ret[:words_count] },
+    bytes_count: input_stats_list.sum { |ret| ret[:bytes_count] }
   }
-  show_result(count_results_sum, options, 'total')
+  show_result(totals, options, 'total')
 end
 
-def adjust_show_width(sum)
-  sum.to_s.rjust(WIDTH_SUM_VALUE)
+def adjust_width(sum)
+  sum.to_s.rjust(WIDTH)
 end
 
 def show_all?(options)
   !options[:l] && !options[:w] && !options[:c]
-end
-
-def show_lines?(options)
-  options[:l] || show_all?(options)
-end
-
-def show_words?(options)
-  options[:w] || show_all?(options)
-end
-
-def show_bytes?(options)
-  options[:c] || show_all?(options)
 end
 
 if $PROGRAM_NAME == __FILE__
