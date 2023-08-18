@@ -5,32 +5,25 @@ require 'optparse'
 
 WIDTH = 8
 
-def main(args)
-  options = {}
-  options[:filepaths] = args[:filepaths] || args[:filepaths] = false
-  options[:l]         = args[:l] || args[:l] = false
-  options[:w]         = args[:w] || args[:w] = false
-  options[:c]         = args[:c] || args[:c] = false
-
+def main(options)
   if options[:filepaths].empty?
-    show_stats_pipe_input(options)
+    show_stats_for_pipe_input(options)
   else
-    show_stats_file_input(options)
+    show_stats_for_file_input(options)
   end
 end
 
-def show_stats_pipe_input(options)
-  input_stats = count_input(readlines.join)
+def show_stats_for_pipe_input(options)
+  input_stats = [count_input(readlines.join)]
   show_result(input_stats, options)
 end
 
-def show_stats_file_input(options)
-  input_stats_list = []
-  options[:filepaths].each do |fp|
+def show_stats_for_file_input(options)
+  input_stats_list = options[:filepaths].map do |fp|
     input_stats = count_input(File.read(fp))
-    show_result(input_stats, options, fp)
-    input_stats_list << input_stats
+    input_stats.merge(file_path: fp)
   end
+  show_result(input_stats_list, options)
   show_total(input_stats_list, options) if input_stats_list.size > 1
 end
 
@@ -42,13 +35,10 @@ def count_input(input_text)
   }
 end
 
-def show_result(count_results, options, counted_target = nil)
-  line = ''
-  line += adjust_width(count_results[:lines_count]) if options[:l] || show_all?(options)
-  line += adjust_width(count_results[:words_count]) if options[:w] || show_all?(options)
-  line += adjust_width(count_results[:bytes_count]) if options[:c] || show_all?(options)
-  line += " #{counted_target}" unless counted_target.nil?
-  puts line
+def show_result(count_results, options)
+  count_results.each do |count_result|
+    puts build_line(count_result, options, count_result[:file_path])
+  end
 end
 
 def show_total(input_stats_list, options)
@@ -57,7 +47,16 @@ def show_total(input_stats_list, options)
     words_count: input_stats_list.sum { |ret| ret[:words_count] },
     bytes_count: input_stats_list.sum { |ret| ret[:bytes_count] }
   }
-  show_result(totals, options, 'total')
+  puts build_line(totals, options, 'total')
+end
+
+def build_line(count_result, options, counted_target)
+  line = ''
+  line += adjust_width(count_result[:lines_count]) if options[:l] || show_all?(options)
+  line += adjust_width(count_result[:words_count]) if options[:w] || show_all?(options)
+  line += adjust_width(count_result[:bytes_count]) if options[:c] || show_all?(options)
+  line += " #{counted_target}" unless counted_target.nil?
+  line
 end
 
 def adjust_width(sum)
