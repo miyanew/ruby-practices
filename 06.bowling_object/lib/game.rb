@@ -29,14 +29,14 @@ class Game
       all_marks.unshift(mark_pair.last) if mark_pair.include?(STRIKE_MARK)
     end
 
-    frames << all_marks
+    [*frames, all_marks]
   end
 
   def calculate_strike_bonus
     @frames.each_with_index.sum do |frame, idx|
       next 0 if idx == 9
 
-      frame.strike? ? @frames[(idx + 1)..].map(&:pins).flatten.first(2).sum : 0
+      frame.strike? ? @frames[(idx + 1)..].flat_map(&:pins).first(2).sum : 0
     end
   end
 

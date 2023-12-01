@@ -11,8 +11,6 @@ class Shot
   end
 
   def score
-    return STRIKE_SCORE if @mark == STRIKE_MARK
-
-    mark.to_i
+    @mark == STRIKE_MARK ? STRIKE_SCORE : mark.to_i
   end
 end

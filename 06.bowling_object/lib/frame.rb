@@ -12,7 +12,7 @@ class Frame
   end
 
   def score
-    @shots.map(&:score).sum
+    @shots.sum(&:score)
   end
 
   def pins
