@@ -3,8 +3,6 @@
 require_relative 'shot'
 
 class Frame
-  STRIKE_SCORE = 10
-
   attr_reader :shots
 
   def initialize(marks)
@@ -20,10 +18,10 @@ class Frame
   end
 
   def strike?
-    @shots.first.score == STRIKE_SCORE
+    @shots.first.score == 10
   end
 
   def spare?
-    !strike? && @shots.first(2).map(&:score).sum == STRIKE_SCORE
+    !strike? && @shots.first(2).map(&:score).sum == 10
   end
 end
