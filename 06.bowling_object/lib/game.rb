@@ -23,13 +23,24 @@ class Game
 
   def parse_marks(all_marks)
     frames = []
-    9.times do
-      mark_pair = all_marks.shift(2)
-      frames << (mark_pair.include?(STRIKE_MARK) ? [mark_pair.first] : mark_pair)
-      all_marks.unshift(mark_pair.last) if mark_pair.include?(STRIKE_MARK)
-    end
+    frame = []
+    all_marks.each do |mark|
+      return [*frames, all_marks[(all_marks.size - frames.flatten.size) * -1..].dup] if last_frame?(frames)
 
-    [*frames, all_marks]
+      frame << mark
+      if frame_terminated?(frame)
+        frames << frame.dup
+        frame.clear
+      end
+    end
+  end
+
+  def frame_terminated?(frame)
+    frame.last == 'X' || frame.last == '10' || frame.size == 2
+  end
+
+  def last_frame?(frames)
+    frames.size == 9
   end
 
   def calculate_strike_bonus
