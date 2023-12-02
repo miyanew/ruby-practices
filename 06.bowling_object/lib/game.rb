@@ -3,8 +3,6 @@
 require_relative 'frame'
 
 class Game
-  STRIKE_MARK = 'X'
-
   attr_reader :frames
 
   def initialize(shot_marks)
