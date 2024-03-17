@@ -5,23 +5,27 @@ require_relative 'shot'
 class Frame
   attr_reader :shots
 
-  def initialize(marks)
-    @shots = marks.map { |m| Shot.new(m) }
+  def initialize
+    @shots = []
   end
 
   def score
-    @shots.sum(&:score)
+    pins.sum
+  end
+
+  def add(pins)
+    @shots << Shot.new(pins)
   end
 
   def pins
-    @shots.map(&:score)
+    @shots.map(&:mark)
   end
 
   def strike?
-    @shots.first.score == 10
+    pins.first == 10
   end
 
   def spare?
-    !strike? && @shots.first(2).map(&:score).sum == 10
+    !strike? && pins.sum == 10
   end
 end
