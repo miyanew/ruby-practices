@@ -8,6 +8,7 @@ class Game
   STRIKE_MARK = 'X'
 
   def initialize(shot_marks)
+    @frame = Frame.new
     @frames = []
     shot_pins = shot_marks.split(',').map do |mark|
       convert_to_i(mark)
@@ -16,10 +17,7 @@ class Game
   end
 
   def score
-    pin_score = @frames.sum(&:score)
-    strike_bonus = calculate_strike_bonus
-    spare_bonus = calculate_spare_bonus
-    pin_score + strike_bonus + spare_bonus
+    @frame.calculate(self)
   end
 
   private
@@ -45,21 +43,5 @@ class Game
 
   def last_frame?
     @frames.size == 10
-  end
-
-  def calculate_strike_bonus
-    @frames.each_with_index.sum do |frame, idx|
-      next 0 if idx == 9
-
-      frame.strike? ? @frames[(idx + 1)..].flat_map(&:pins).first(2).sum : 0
-    end
-  end
-
-  def calculate_spare_bonus
-    @frames.each_with_index.sum do |frame, idx|
-      next 0 if idx == 9
-
-      frame.spare? ? @frames[(idx + 1)].pins.first : 0
-    end
   end
 end
