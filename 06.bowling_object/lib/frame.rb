@@ -3,10 +3,19 @@
 require_relative 'shot'
 
 class Frame
-  attr_reader :shots
+  attr_accessor :shots
 
   def initialize
     @shots = []
+  end
+
+  def build_frames(shot_pins)
+    frames = []
+    shot_pins.each do |pins|
+      frames = [*frames, Frame.new] if frame_terminated?(frames.last) && !last_frame?(frames)
+      frames.last.shots = [*frames.last.shots, Shot.new(pins)]
+    end
+    frames
   end
 
   def calculate(game)
@@ -22,10 +31,6 @@ class Frame
     total_score
   end
 
-  def add(pins)
-    @shots << Shot.new(pins)
-  end
-
   def pins
     @shots.map(&:mark)
   end
@@ -39,6 +44,14 @@ class Frame
   end
 
   private
+
+  def frame_terminated?(current_frame)
+    current_frame.nil? || current_frame.strike? || current_frame.spare? || current_frame.shots.size == 2
+  end
+
+  def last_frame?(frames)
+    frames.size == 10
+  end
 
   def next_two_shots(frames, idx)
     frames[(idx + 1)..].flat_map(&:pins).first(2).sum
