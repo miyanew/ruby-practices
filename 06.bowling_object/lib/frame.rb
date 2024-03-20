@@ -11,9 +11,9 @@ class Frame
 
   def build_frames(shot_pins)
     frames = []
-    shot_pins.split(',').each do |pins|
+    shot_pins.split(',').each do |pin|
       frames = [*frames, Frame.new] if frame_terminated?(frames.last) && !last_frame?(frames)
-      frames.last.shots = [*frames.last.shots, Shot.new(pins)]
+      frames.last.shots = [*frames.last.shots, Shot.new(pin)]
     end
     frames
   end
@@ -32,7 +32,7 @@ class Frame
   end
 
   def pins
-    @shots.map(&:mark)
+    @shots.map(&:pin)
   end
 
   def strike?
@@ -45,8 +45,8 @@ class Frame
 
   private
 
-  def frame_terminated?(current_frame)
-    current_frame.nil? || current_frame.strike? || current_frame.spare? || current_frame.shots.size == 2
+  def frame_terminated?(frame)
+    frame.nil? || frame.strike? || frame.spare? || frame.shots.size == 2
   end
 
   def last_frame?(frames)
