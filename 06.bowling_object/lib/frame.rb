@@ -11,7 +11,7 @@ class Frame
 
   def build_frames(shot_pins)
     frames = []
-    shot_pins.each do |pins|
+    shot_pins.split(',').each do |pins|
       frames = [*frames, Frame.new] if frame_terminated?(frames.last) && !last_frame?(frames)
       frames.last.shots = [*frames.last.shots, Shot.new(pins)]
     end
