@@ -6,10 +6,8 @@ class Shot
   STRIKE_MARK = 'X'
 
   def initialize(pin)
-    @pin = convert_to_i(pin)
+    @pin = pin
   end
-
-  private
 
   def convert_to_i(pin)
     pin == STRIKE_MARK ? 10 : pin.to_i
