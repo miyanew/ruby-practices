@@ -9,26 +9,17 @@ class Frame
     @shots = []
   end
 
-  def build_frames(shot_pins)
-    frames = []
-    shot_pins.split(',').each do |pin|
-      frames = [*frames, Frame.new] if frame_terminated?(frames.last) && !last_frame?(frames)
-      frames.last.shots = [*frames.last.shots, Shot.new(pin)]
-    end
-    frames
+  def add(pin)
+    @shots = [*@shots, Shot.new(pin)]
   end
 
-  def calculate(game)
-    frames = game.frames
-    total_score = 0
-    frames.each_with_index do |frame, idx|
-      total_score += frame.pins.sum
-      next 0 if idx == 9
-
-      total_score += next_two_shots(frames, idx) if frame.strike?
-      total_score += next_one_shots(frames, idx) if frame.spare?
+  def score(frames, idx)
+    score = frames[idx].pins.sum
+    if idx < 9
+      score += next_two_shots(frames, idx) if frames[idx].strike?
+      score += next_one_shots(frames, idx) if frames[idx].spare?
     end
-    total_score
+    score
   end
 
   def pins
@@ -44,14 +35,6 @@ class Frame
   end
 
   private
-
-  def frame_terminated?(frame)
-    frame.nil? || frame.strike? || frame.spare? || frame.shots.size == 2
-  end
-
-  def last_frame?(frames)
-    frames.size == 10
-  end
 
   def next_two_shots(frames, idx)
     frames[(idx + 1)..].flat_map(&:pins).first(2).sum
