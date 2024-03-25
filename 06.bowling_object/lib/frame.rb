@@ -28,6 +28,12 @@ class Frame
     @shots.map(&:score)
   end
 
+  def terminated?
+    strike? || spare? || @shots.size == 2
+  end
+
+  private
+
   def strike?
     pins.first == 10
   end
@@ -35,8 +41,6 @@ class Frame
   def spare?
     !strike? && pins.sum == 10
   end
-
-  private
 
   def next_two_shots(frames, idx)
     frames[(idx + 1)..].flat_map(&:pins).first(2).sum
