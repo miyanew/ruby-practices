@@ -9,6 +9,12 @@ class Shot
     @pin = pin
   end
 
+  def score
+    convert_to_i(@pin)
+  end
+
+  private
+
   def convert_to_i(pin)
     pin == STRIKE_MARK ? 10 : pin.to_i
   end

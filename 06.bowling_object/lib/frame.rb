@@ -23,7 +23,7 @@ class Frame
   end
 
   def pins
-    @shots.map { |shot| shot.convert_to_i(shot.pin) }
+    @shots.map(&:score)
   end
 
   def strike?
