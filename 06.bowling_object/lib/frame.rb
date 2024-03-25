@@ -28,8 +28,12 @@ class Frame
     @shots.map(&:score)
   end
 
-  def terminated?
+  def two_shots_done?
     strike? || spare? || @shots.size == 2
+  end
+
+  def last_frame?
+    @number == 9
   end
 
   private

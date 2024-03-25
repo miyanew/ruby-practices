@@ -16,15 +16,11 @@ class Game
   private
 
   def build_frames(shot_pins)
-    @frames = []
+    frames = []
     shot_pins.split(',').each_with_index do |pin, idx|
-      @frames = [*@frames, Frame.new(@frames.size)] if idx.zero? || @frames.last.terminated? && !last_frame?
-      @frames.last.shots = @frames.last.add(pin)
+      frames = [*frames, Frame.new(frames.size)] if idx.zero? || frames[-1].two_shots_done? && !frames[-1].last_frame?
+      frames[-1].add(pin)
     end
-    @frames
-  end
-
-  def last_frame?
-    @frames.size == 10
+    frames
   end
 end
