@@ -4,20 +4,22 @@ require_relative 'shot'
 
 class Frame
   attr_accessor :shots
+  attr_reader :number
 
-  def initialize
+  def initialize(number)
     @shots = []
+    @number = number
   end
 
   def add(pin)
     @shots = [*@shots, Shot.new(pin)]
   end
 
-  def score(frames, idx)
-    score = frames[idx].pins.sum
-    if idx < 9
-      score += next_two_shots(frames, idx) if frames[idx].strike?
-      score += next_one_shots(frames, idx) if frames[idx].spare?
+  def score(frames)
+    score = pins.sum
+    if @number < 9
+      score += next_two_shots(frames, @number) if strike?
+      score += next_one_shots(frames, @number) if spare?
     end
     score
   end

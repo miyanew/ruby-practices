@@ -10,7 +10,7 @@ class Game
   end
 
   def score
-    @frames.each_with_index.sum { |frame, idx| frame.score(@frames, idx) }
+    @frames.sum { |frame| frame.score(@frames) }
   end
 
   private
@@ -18,7 +18,7 @@ class Game
   def build_frames(shot_pins)
     @frames = []
     shot_pins.split(',').each do |pin|
-      @frames = [*@frames, Frame.new] if frame_terminated?(@frames.last) && !last_frame?
+      @frames = [*@frames, Frame.new(@frames.size)] if frame_terminated?(@frames.last) && !last_frame?
       @frames.last.shots = @frames.last.add(pin)
     end
     @frames
