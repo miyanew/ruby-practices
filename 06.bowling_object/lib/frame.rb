@@ -16,16 +16,12 @@ class Frame
   end
 
   def score(frames)
-    score = pins.sum
+    score = @shots.sum(&:score)
     if @number < 9
       score += next_two_shots(frames, @number) if strike?
       score += next_one_shots(frames, @number) if spare?
     end
     score
-  end
-
-  def pins
-    @shots.map(&:score)
   end
 
   def two_shots_done?
@@ -39,18 +35,18 @@ class Frame
   private
 
   def strike?
-    pins.first == 10
+    @shots[0].score == 10
   end
 
   def spare?
-    !strike? && pins.sum == 10
+    !strike? && @shots.sum(&:score) == 10
   end
 
   def next_two_shots(frames, idx)
-    frames[(idx + 1)..].flat_map(&:pins).first(2).sum
+    frames[(idx + 1)..].flat_map(&:shots).first(2).sum(&:score)
   end
 
   def next_one_shots(frames, idx)
-    frames[(idx + 1)].pins.first
+    frames[(idx + 1)].shots[0].score
   end
 end
