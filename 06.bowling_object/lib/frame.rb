@@ -18,8 +18,8 @@ class Frame
   def score(frames)
     score = @shots.sum(&:score)
     if @number < 9
-      score += next_two_shots(frames, @number) if strike?
-      score += next_one_shots(frames, @number) if spare?
+      score += strike_bonus(frames[(@number + 1)..]) if strike?
+      score += spare_bonus(frames[(@number + 1)]) if spare?
     end
     score
   end
@@ -35,18 +35,19 @@ class Frame
   private
 
   def strike?
-    @shots[0].score == 10
+    @shots[0].strike?
   end
 
   def spare?
     !strike? && @shots.sum(&:score) == 10
   end
 
-  def next_two_shots(frames, idx)
-    frames[(idx + 1)..].flat_map(&:shots).first(2).sum(&:score)
+  def strike_bonus(next_frames)
+    next_two_shots = next_frames.flat_map(&:shots).first(2)
+    next_two_shots.sum(&:score)
   end
 
-  def next_one_shots(frames, idx)
-    frames[(idx + 1)].shots[0].score
+  def spare_bonus(next_frame)
+    next_frame.shots[0].score
   end
 end
