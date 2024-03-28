@@ -17,9 +17,13 @@ class Game
 
   def build_frames(shot_pins)
     frames = []
-    shot_pins.split(',').each_with_index do |pin, idx|
-      frames = [*frames, Frame.new(frames.size)] if idx.zero? || frames[-1].two_shots_done? && !frames[-1].last_frame?
-      frames[-1].add(pin)
+    current_frame = nil
+    shot_pins.split(',').each do |pin|
+      if current_frame.nil? || current_frame.addable? && !current_frame.last_frame?
+        current_frame = Frame.new(frames.size)
+        frames << current_frame
+      end
+      current_frame.add(pin)
     end
     frames
   end

@@ -11,7 +11,7 @@ class Frame
   end
 
   def add(pin)
-    @shots = [*@shots, Shot.new(pin)]
+    @shots << Shot.new(pin)
   end
 
   def score(frames)
@@ -23,7 +23,7 @@ class Frame
     score
   end
 
-  def two_shots_done?
+  def addable?
     strike? || spare? || @shots.size == 2
   end
 
