@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 class Shot
-  attr_reader :pin
-
   STRIKE_MARK = 'X'
 
   def initialize(pin)

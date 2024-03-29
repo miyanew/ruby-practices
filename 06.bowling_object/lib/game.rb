@@ -3,8 +3,6 @@
 require_relative 'frame'
 
 class Game
-  attr_reader :frames
-
   def initialize(all_roll_result)
     @frames = build_frames(all_roll_result)
   end
