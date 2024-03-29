@@ -10,6 +10,10 @@ class Frame
     @number = number
   end
 
+  def addable?
+    @shots.empty? || (@shots.size == 1 && !strike?) || last_frame?
+  end
+
   def add(pin)
     @shots << Shot.new(pin)
   end
@@ -17,21 +21,18 @@ class Frame
   def score(frames)
     score = @shots.sum(&:score)
     if @number < 9
-      score += strike_bonus(frames[(@number + 1)..]) if strike?
-      score += spare_bonus(frames[(@number + 1)]) if spare?
+      following_frames = frames[(@number + 1)..]
+      score += strike_bonus(following_frames) if strike?
+      score += spare_bonus(following_frames[0]) if spare?
     end
     score
   end
 
-  def addable?
-    strike? || spare? || @shots.size == 2
-  end
+  private
 
   def last_frame?
     @number == 9
   end
-
-  private
 
   def strike?
     @shots[0].strike?
@@ -41,12 +42,12 @@ class Frame
     !strike? && @shots.sum(&:score) == 10
   end
 
-  def strike_bonus(next_frames)
-    next_two_shots = next_frames.flat_map(&:shots).first(2)
+  def strike_bonus(following_frames)
+    next_two_shots = following_frames.flat_map(&:shots).first(2)
     next_two_shots.sum(&:score)
   end
 
-  def spare_bonus(next_frame)
-    next_frame.shots[0].score
+  def spare_bonus(following_frame)
+    following_frame.shots[0].score
   end
 end

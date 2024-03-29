@@ -17,7 +17,7 @@ class Game
     frames = []
     current_frame = nil
     all_roll_result.split(',').each do |pin|
-      if current_frame.nil? || current_frame.addable? && !current_frame.last_frame?
+      if current_frame.nil? || !current_frame.addable?
         current_frame = Frame.new(frames.size)
         frames << current_frame
       end
