@@ -8,7 +8,7 @@ class Shot
   end
 
   def score
-    @pin == STRIKE_MARK ? 10 : @pin.to_i
+    strike? ? 10 : @pin.to_i
   end
 
   def strike?

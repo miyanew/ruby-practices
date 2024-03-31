@@ -19,13 +19,13 @@ class Frame
   end
 
   def score(frames)
-    score = @shots.sum(&:score)
+    total_score = @shots.sum(&:score)
     if @number < 9
       following_frames = frames[(@number + 1)..]
-      score += strike_bonus(following_frames) if strike?
-      score += spare_bonus(following_frames[0]) if spare?
+      total_score += strike_bonus(following_frames) if strike?
+      total_score += spare_bonus(following_frames[0]) if spare?
     end
-    score
+    total_score
   end
 
   private
