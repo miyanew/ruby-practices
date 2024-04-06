@@ -8,7 +8,7 @@ end
 
 class FileListPresenter
   MAX_COL_SIZE = 3
-  WIDTH_BETWEEN_ITMES = 7
+  WIDTH_BETWEEN_ITMES = 2
 
   def show(target_path)
     files = collect_filenames(target_path)
@@ -19,10 +19,8 @@ class FileListPresenter
 
   def collect_filenames(target_path)
     if File.directory?(target_path)
-      Dir.chdir(target_path)
-      Dir.glob('*', flags)
+      Dir.glob(File.join(target_path, '*')).map { |fn| File.basename(fn) }
     else
-      Dir.chdir(File.dirname(File.expand_path(target_path)))
       [File.basename(target_path)]
     end
   end
@@ -36,13 +34,21 @@ class FileListPresenter
       MAX_COL_SIZE.times do |j|
         show_line << margined_filenames[i + max_row_size * j] unless margined_filenames[i + max_row_size * j].nil?
       end
-      result += "#{show_line.join('')}\n"
+      result += "#{show_line.join('').rstrip}" + ' ' * WIDTH_BETWEEN_ITMES + "\n"
     end
-    result.rstrip.chomp
+    result.chomp
   end
 
   def add_margin_right_of_items(filenames)
-    width_per_item = filenames.max_by(&:length).length + WIDTH_BETWEEN_ITMES
-    filenames.map { |file_name| file_name.ljust(width_per_item) }
+    tmp = []
+    max_row = filenames.size.ceildiv(MAX_COL_SIZE)
+    MAX_COL_SIZE.times do |i|
+        target = filenames[(max_row * i)..(max_row * (i + 1) - 1)]
+        break if target.empty?
+
+        max_length = target.max_by(&:size).size
+        tmp << target.map { |file_name| file_name.ljust(max_length + WIDTH_BETWEEN_ITMES) }
+    end
+    tmp.flatten
   end
 end
