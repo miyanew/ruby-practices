@@ -10,15 +10,13 @@ class FileCollecter
   private
 
   def collect_files(target_path)
-    files = []
     if File.directory?(target_path)
-      Dir.glob(File.join(target_path, '*')).each do |file_path|
-        files << MyFile.new(File.expand_path(file_path))
+      Dir.glob(File.join(target_path, '*')).map do |entry_name|
+        MyFile.new(File.expand_path(entry_name))
       end
     else
-      files << MyFile.new(File.expand_path(target_path))
+      [MyFile.new(File.expand_path(target_path))]
     end
-    files
   end
 end
 

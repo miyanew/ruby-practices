@@ -1,48 +1,25 @@
 # frozen_string_literal: true
 
-require_relative 'my_file'
+require_relative 'file_collecter'
+require_relative 'file_list_presenter'
 
 class LsCommand
-  def show(target_path)
-    FileListPresenter.new.show(target_path)
+  def initialize(options)
+    @options = options
+    @files = collect_files(options)
   end
-end
 
-class FileListPresenter
-  MAX_COL_SIZE = 3
-  WIDTH_BETWEEN_ITMES = 2
-
-  def show(target_path)
-    files = FileCollecter.new(target_path).files
-    show_filenames(files.map(&:basename))
+  def show
+    if @options[:r]
+      FileListPresenter.new.show_items(@files.map(&:basename).reverse)
+    else
+      FileListPresenter.new.show_items(@files.map(&:basename))
+    end
   end
 
   private
 
-  def show_filenames(filenames)
-    margined_filenames = add_margin_right_of_items(filenames)
-    max_row_size = margined_filenames.size.ceildiv(MAX_COL_SIZE)
-    result = ''
-    max_row_size.times do |i|
-      show_line = []
-      MAX_COL_SIZE.times do |j|
-        show_line << margined_filenames[i + max_row_size * j] unless margined_filenames[i + max_row_size * j].nil?
-      end
-      result += "#{show_line.join('').rstrip}#{' ' * WIDTH_BETWEEN_ITMES}\n"
-    end
-    result.chomp
-  end
-
-  def add_margin_right_of_items(filenames)
-    tmp = []
-    max_row = filenames.size.ceildiv(MAX_COL_SIZE)
-    MAX_COL_SIZE.times do |i|
-      target = filenames[(max_row * i)..(max_row * (i + 1) - 1)]
-      break if target.empty?
-
-      max_length = target.max_by(&:size).size
-      tmp << target.map { |file_name| file_name.ljust(max_length + WIDTH_BETWEEN_ITMES) }
-    end
-    tmp.flatten
+  def collect_files(options)
+    FileCollecter.new(options[:path]).files
   end
 end
