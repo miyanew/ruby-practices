@@ -27,7 +27,7 @@ class TestLsCommand < Minitest::Test
     assert_equal expected, LsCommand.new(options).show
   end
 
-  def test_フォルダパスを入力したら配下のファイル名とフォルダ名が逆順で表示される
+  def test_ファイル名とフォルダ名が逆順で表示される
     expected = <<~TEXT.chomp
       README.md     06.bowling_object  02.calendar
       99.wc_object  05.wc              01.fizzbuzz
@@ -38,6 +38,20 @@ class TestLsCommand < Minitest::Test
     options = {}
     options[:path] = 'test/fixtures'
     options[:r] = true
+    assert_equal expected, LsCommand.new(options).show
+  end
+
+  def test_ドットファイルも含めて表示される
+    expected = <<~TEXT.chomp
+      .            04.ls              98.rake
+      01.fizzbuzz  05.wc              99.wc_object
+      02.calendar  06.bowling_object  README.md
+      03.bowling   07.ls_object
+    TEXT
+
+    options = {}
+    options[:path] = 'test/fixtures'
+    options[:a] = true
     assert_equal expected, LsCommand.new(options).show
   end
 end

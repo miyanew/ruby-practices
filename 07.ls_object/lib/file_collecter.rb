@@ -11,11 +11,11 @@ class FileCollecter
 
   def collect_files(target_path)
     if File.directory?(target_path)
-      Dir.glob(File.join(target_path, '*')).map do |entry_name|
-        MyFile.new(File.expand_path(entry_name))
+      Dir.glob(File.join(target_path, '*'), File::FNM_DOTMATCH).map do |entry_name|
+        MyFile.new(entry_name)
       end
     else
-      [MyFile.new(File.expand_path(target_path))]
+      [MyFile.new(target_path)]
     end
   end
 end

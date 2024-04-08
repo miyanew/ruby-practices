@@ -10,11 +10,10 @@ class LsCommand
   end
 
   def show
-    if @options[:r]
-      FileListPresenter.new.show_items(@files.map(&:basename).reverse)
-    else
-      FileListPresenter.new.show_items(@files.map(&:basename))
-    end
+    files = @files.map(&:basename)
+    files = files.reject { |file| file =~ /^\.{1,2}$/ } unless @options[:a]
+    files = files.reverse if @options[:r]
+    FileListPresenter.new.show_items(files)
   end
 
   private
