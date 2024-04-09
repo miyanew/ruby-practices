@@ -1,31 +1,12 @@
 # frozen_string_literal: true
 
-class FileCollecter
-  attr_reader :files
+class MyFile
+  attr_reader :argpath, :basename, :blocks, :ftype, :permission_str, :nlink, :uname, :gname, :size, :mtime
 
   def initialize(target_path)
-    @files = collect_files(target_path)
-  end
-
-  private
-
-  def collect_files(target_path)
-    if File.directory?(target_path)
-      Dir.glob(File.join(target_path, '*'), File::FNM_DOTMATCH).map do |entry_name|
-        MyFile.new(entry_name)
-      end
-    else
-      [MyFile.new(target_path)]
-    end
-  end
-end
-
-class MyFile
-  attr_reader :basename
-
-  def initialize(fullpath)
-    @basename = File.basename(fullpath)
-    stat = File::Stat.new(fullpath)
+    @argpath = target_path
+    @basename = File.basename(target_path)
+    stat = File::Stat.new(target_path)
     @blocks = stat.blocks
     @ftype = convert_ftype_to_1char(stat.ftype)
     @permission_oct = stat.mode.to_s(8)[-3..]
@@ -59,3 +40,4 @@ class MyFile
     perm_str + (perm_bin[2].to_i.zero? ? '-' : 'x')
   end
 end
+  

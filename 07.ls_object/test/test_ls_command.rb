@@ -1,17 +1,17 @@
 # frozen_string_literal: true
 
 require 'minitest/autorun'
-require_relative '../lib/ls_command'
+require_relative '../lib/file_list_presenter'
 
 class TestLsCommand < Minitest::Test
   def test_ファイルパスを入力したらファイル名が表示される
     expected = <<~TEXT.chomp
-      README.md
+      test/fixtures/README.md
     TEXT
 
-    options = {}
-    options[:path] = 'test/fixtures/README.md'
-    assert_equal expected, LsCommand.new(options).show
+    args = {}
+    args[:path] = 'test/fixtures/README.md'
+    assert_equal expected, FileListPresenter.new(args).show_file_list
   end
 
   def test_フォルダパスを入力したら配下のファイル名とフォルダ名が表示される
@@ -22,9 +22,9 @@ class TestLsCommand < Minitest::Test
       04.ls        98.rake
     TEXT
 
-    options = {}
-    options[:path] = 'test/fixtures'
-    assert_equal expected, LsCommand.new(options).show
+    args = {}
+    args[:path] = 'test/fixtures'
+    assert_equal expected, FileListPresenter.new(args).show_file_list
   end
 
   def test_ファイル名とフォルダ名が逆順で表示される
@@ -35,10 +35,10 @@ class TestLsCommand < Minitest::Test
       07.ls_object  03.bowling
     TEXT
 
-    options = {}
-    options[:path] = 'test/fixtures'
-    options[:r] = true
-    assert_equal expected, LsCommand.new(options).show
+    args = {}
+    args[:path] = 'test/fixtures'
+    args[:r] = true
+    assert_equal expected, FileListPresenter.new(args).show_file_list
   end
 
   def test_ドットファイルも含めて表示される
@@ -49,9 +49,20 @@ class TestLsCommand < Minitest::Test
       03.bowling   07.ls_object
     TEXT
 
-    options = {}
-    options[:path] = 'test/fixtures'
-    options[:a] = true
-    assert_equal expected, LsCommand.new(options).show
+    args = {}
+    args[:path] = 'test/fixtures'
+    args[:a] = true
+    assert_equal expected, FileListPresenter.new(args).show_file_list
+  end
+
+  def test_ファイルパスを入力したらプロパティを含めて表示される
+    expected = <<~TEXT.chomp
+      -rw-r--r-- 1 deb deb 2648 Apr  6 22:32 test/fixtures/README.md
+    TEXT
+
+    args = {}
+    args[:path] = 'test/fixtures/README.md'
+    args[:l] = true
+    assert_equal expected, FileListPresenter.new(args).show_file_list
   end
 end
