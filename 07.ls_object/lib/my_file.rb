@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require 'etc'
+
 class MyFile
   attr_reader :argpath, :basename, :blocks, :ftype, :permission_str, :nlink, :uname, :gname, :size, :mtime
 
@@ -34,9 +36,10 @@ class MyFile
   end
 
   def convert_permission_bin_to_str(perm_bin)
-    perm_str = ''
-    perm_str += (perm_bin[0].to_i.zero? ? '-' : 'r')
-    perm_str += (perm_bin[1].to_i.zero? ? '-' : 'w')
-    perm_str + (perm_bin[2].to_i.zero? ? '-' : 'x')
+    [
+      perm_bin[0].to_i.zero? ? '-' : 'r',
+      perm_bin[1].to_i.zero? ? '-' : 'w',
+      perm_bin[2].to_i.zero? ? '-' : 'x'
+    ]
   end
 end
