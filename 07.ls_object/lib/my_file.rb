@@ -7,7 +7,7 @@ class MyFile
     @argpath = target_path
     @basename = File.basename(target_path)
     stat = File::Stat.new(target_path)
-    @blocks = stat.blocks
+    @blocks = stat.blocks / 2 # デフォルトブロックサイズの差分を補正。File::Stat 512byte、Linux 1024byte
     @ftype = convert_ftype_to_1char(stat.ftype)
     @permission_oct = stat.mode.to_s(8)[-3..]
     @permission_str = convert_permission_oct_to_str(@permission_oct)
@@ -40,4 +40,3 @@ class MyFile
     perm_str + (perm_bin[2].to_i.zero? ? '-' : 'x')
   end
 end
-  

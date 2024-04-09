@@ -12,14 +12,22 @@ class FileListPresenter
 
   def show_file_list
     file_list = FilePreparer.new(@opts).prepare_file_list
-    col_size = @opts[:long_format] ? 1 : MAX_COL_SIZE
-    show_fixed_columns(file_list, col_size)
+
+    if @opts[:long_format] || file_list.count == 1
+      show_single_column(file_list)
+    else
+      show_multi_column(file_list, MAX_COL_SIZE)
+    end
   end
 
   private
 
-  def show_fixed_columns(show_items, col_size_max)
-    show_line = ''
+  def show_single_column(show_items)
+    show_items.join("\n")
+  end
+
+  def show_multi_column(show_items, col_size_max)
+    show_lines = []
     col_size = show_items.count < col_size_max ? show_items.count : col_size_max
     row_size = show_items.count.ceildiv(col_size)
     width_per_col = calc_width_per_column(show_items, col_size)
@@ -29,10 +37,10 @@ class FileListPresenter
       col_size.times do |j|
         tmp_line << padding_space(show_items[i + row_size * j], width_per_col[j] + WIDTH_BETWEEN_ITMES)
       end
-      show_line += "#{tmp_line.join('').rstrip}\n"
+      show_lines << tmp_line.join.rstrip
     end
 
-    show_line.chomp
+    show_lines.join("\n")
   end
 
   def calc_width_per_column(items, col_size)

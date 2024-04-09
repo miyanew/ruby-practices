@@ -65,4 +65,25 @@ class TestLsCommand < Minitest::Test
     args[:l] = true
     assert_equal expected, FileListPresenter.new(args).show_file_list
   end
+
+  def test_フォルダパスを入力したらプロパティを含めて表示される
+    expected = <<~TEXT.chomp
+      total 40
+      drwxr-xr-x 2 deb deb 4096 Apr  6 22:33 01.fizzbuzz
+      drwxr-xr-x 2 deb deb 4096 Apr  6 22:33 02.calendar
+      drwxr-xr-x 2 deb deb 4096 Apr  6 22:33 03.bowling
+      drwxr-xr-x 2 deb deb 4096 Apr  6 22:33 04.ls
+      drwxr-xr-x 2 deb deb 4096 Apr  6 22:33 05.wc
+      drwxr-xr-x 2 deb deb 4096 Apr  6 22:34 06.bowling_object
+      drwxr-xr-x 2 deb deb 4096 Apr  6 22:34 07.ls_object
+      drwxr-xr-x 2 deb deb 4096 Apr  6 22:32 98.rake
+      drwxr-xr-x 2 deb deb 4096 Apr  6 22:32 99.wc_object
+      -rw-r--r-- 1 deb deb 2648 Apr  6 22:32 README.md
+    TEXT
+
+    args = {}
+    args[:path] = 'test/fixtures'
+    args[:l] = true
+    assert_equal expected, FileListPresenter.new(args).show_file_list
+  end
 end

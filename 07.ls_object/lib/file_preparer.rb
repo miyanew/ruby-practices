@@ -11,7 +11,10 @@ class FilePreparer
   def prepare_file_list
     files = @opts[:reverse] ? @files.reverse : @files
 
-    if @opts[:long_format]
+    if @opts[:long_format] && File.directory?(@opts[:path])
+      blocks_sum = files.sum(&:blocks)
+      ["total #{blocks_sum}", build_long_format(files)].flatten
+    elsif @opts[:long_format]
       build_long_format(files)
     else
       build_name_list(files, @opts[:path])
@@ -42,7 +45,7 @@ class FilePreparer
         f.size.to_s,
         f.mtime.strftime('%b'),
         f.mtime.strftime('%e %H:%M'),
-        f.argpath
+        files.count > 1 ? f.basename : f.argpath
       ].join(' ')
     end
   end
