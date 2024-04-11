@@ -2,7 +2,7 @@
 
 require_relative 'my_file'
 
-class FilePreparer
+class FileListPreparer
   def initialize(opts)
     @opts = opts
     @files = collect_files(@opts[:path])
