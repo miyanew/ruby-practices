@@ -147,7 +147,7 @@ class TestLsCommand < Minitest::Test
     assert_equal expected, FileListPresenter.new(args).show_file_list
   end
 
-  def test_入力したフォルダ配下のファイル名とフォルダ名がドットファイルとプロパティ含めて表示される
+  def test_入力したフォルダ配下のファイル名とフォルダ名がドットファイルとプロパティ含めて逆順で表示される
     expected = <<~TEXT.chomp
       total 44
       -rw-r--r--  1 deb deb 2648 Mar  1 00:01 README.md
