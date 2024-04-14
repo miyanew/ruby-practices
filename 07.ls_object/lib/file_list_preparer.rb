@@ -36,15 +36,18 @@ class FileListPreparer
   end
 
   def build_long_format(files)
+    nlink_width = @files.map(&:nlink).max.to_s.size
+
     files.map do |f|
       [
         f.ftype + f.permission_str,
-        f.nlink.to_s,
+        f.nlink.to_s.rjust(nlink_width),
         f.uname.to_s,
         f.gname.to_s,
         f.size.to_s,
         f.mtime.strftime('%b'),
-        f.mtime.strftime('%e %H:%M'),
+        f.mtime.strftime('%e').rjust(2),
+        f.mtime.strftime('%H:%M'),
         files.count > 1 ? f.basename : f.argpath
       ].join(' ')
     end
