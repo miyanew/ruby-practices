@@ -123,4 +123,51 @@ class TestLsCommand < Minitest::Test
     args[:l] = true
     assert_equal expected, FileListPresenter.new(args).show_file_list
   end
+
+  def test_入力したフォルダ配下のファイル名とフォルダ名がドットファイルとプロパティ含めて表示される
+    expected = <<~TEXT.chomp
+      total 44
+      drwxr-xr-x 11 deb deb 4096 Apr 14 13:01 .
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 01.fizzbuzz
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 02.calendar
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 03.bowling
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 04.ls
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 05.wc
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 06.bowling_object
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 07.ls_object
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 98.rake
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 99.wc_object
+      -rw-r--r--  1 deb deb 2648 Mar  1 00:01 README.md
+    TEXT
+
+    args = {}
+    args[:path] = 'test/fixtures'
+    args[:a] = true
+    args[:l] = true
+    assert_equal expected, FileListPresenter.new(args).show_file_list
+  end
+
+  def test_入力したフォルダ配下のファイル名とフォルダ名がドットファイルとプロパティ含めて表示される
+    expected = <<~TEXT.chomp
+      total 44
+      -rw-r--r--  1 deb deb 2648 Mar  1 00:01 README.md
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 99.wc_object
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 98.rake
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 07.ls_object
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 06.bowling_object
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 05.wc
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 04.ls
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 03.bowling
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 02.calendar
+      drwxr-xr-x  2 deb deb 4096 Apr 14 13:01 01.fizzbuzz
+      drwxr-xr-x 11 deb deb 4096 Apr 14 13:01 .
+    TEXT
+
+    args = {}
+    args[:path] = 'test/fixtures'
+    args[:r] = true
+    args[:a] = true
+    args[:l] = true
+    assert_equal expected, FileListPresenter.new(args).show_file_list
+  end
 end
