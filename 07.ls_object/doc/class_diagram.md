@@ -5,18 +5,15 @@ title: my_ls
 
 classDiagram
     direction LR
-    FileListPresenter -- FileListPreparer
-    FileListPreparer -- MyFile
-    class FileListPresenter{
-      +show_file_list(List file_list)
-      -show_single_column(List items)
-      -show_multi_column(List items, Integer col_size)
-    }
-    class FileListPreparer{
-      +prepare_file_list(String filepath, List options)
+    FileList -- MyFile
+    class FileList{
+      +show_name_list(List file_list, List Options)
+      +show_long_format(List file_list, List Options)
       -collect_files(String filepath)
-      -build_long_format(List files)
       -build_name_list(List files)
+      -build_long_format(List files)
+      -format_single_column(List items)
+      -format_multi_column(List items, Integer col_size)
     }
     class MyFile{
       +String argpath
