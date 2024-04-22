@@ -42,8 +42,8 @@ class FileListPreparer
       [
         f.ftype + f.permission_str,
         f.nlink.to_s.rjust(nlink_width),
-        f.uname.to_s,
-        f.gname.to_s,
+        f.uname,
+        f.gname,
         f.size.to_s,
         f.mtime.strftime('%b'),
         f.mtime.strftime('%e').rjust(2),

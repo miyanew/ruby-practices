@@ -29,17 +29,17 @@ class MyFile
   end
 
   def convert_permission_oct_to_str(perm_oct)
-    perm_oct.split('').map do |p_oct|
-      p_bin = p_oct.to_i.to_s(2)
-      convert_permission_bin_to_str(p_bin.rjust(3, '0'))
-    end.join
-  end
+    permissions = {
+      '0' => '---',
+      '1' => '--x',
+      '2' => '-w-',
+      '3' => '-wx',
+      '4' => 'r--',
+      '5' => 'r-x',
+      '6' => 'rw-',
+      '7' => 'rwx'
+    }
 
-  def convert_permission_bin_to_str(perm_bin)
-    [
-      perm_bin[0].to_i.zero? ? '-' : 'r',
-      perm_bin[1].to_i.zero? ? '-' : 'w',
-      perm_bin[2].to_i.zero? ? '-' : 'x'
-    ]
+    perm_oct.chars.map { |p_oct| permissions[p_oct] }.join
   end
 end
