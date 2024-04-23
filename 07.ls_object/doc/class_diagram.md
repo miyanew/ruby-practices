@@ -5,15 +5,21 @@ title: my_ls
 
 classDiagram
     direction LR
+    NormalFormat -- FileList
+    LongFormat -- FileList
     FileList -- MyFile
-    class FileList{
-      +show_name_list(List file_list, List Options)
-      +show_long_format(List file_list, List Options)
-      -collect_files(String filepath)
-      -build_name_list(List files)
-      -build_long_format(List files)
+    class NormalFormat{
+      +build(List files)
       -format_single_column(List items)
       -format_multi_column(List items, Integer col_size)
+    }
+    class LongFormat{
+      +build(List files)
+    }
+    class FileList{
+      +List files
+      +show(List files, List Options)
+      -collect_files(String filepath)
     }
     class MyFile{
       +String argpath
