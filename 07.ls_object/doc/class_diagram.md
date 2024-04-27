@@ -5,78 +5,24 @@ title: my_ls
 
 classDiagram
     direction LR
-    LsCommand -- FileDirEntryList
+    LsCommand -- MultiColumnOutput
     LsCommand -- LongFormat
-    FileDirEntryList -- MyFile
-    LongFormat -- MyFile
+    MultiColumnOutput -- FileList
+    LongFormat -- FileList
 
-    class FileDirEntryList{
-      +show(List files)
-      -collect_files(String filepath)
-      -build(List files)
-      -format_single_column(List items)
+    class MultiColumnOutput{
+      +show(String filepath, Boolean reverse)
       -format_multi_column(List items, Integer col_size)
     }
     class LongFormat{
-      +show(List files)
-      -collect_files(String filepath)
-      -build(List files)
+      +show(String filepath, Boolean reverse)
+      -format_long_format(List items, Integer width)
     }
-    class MyFile{
-      +String argpath
-      +String basename
-      +Integer blocks
-      +String ftype
-      +String permission
-      +Integer nlink
-      +String uname
-      +String gname
-      +Integer size
-      +Time mtime
-    }
-
-```
-
-```mermaid
----
-title: my_ls 継承ver
----
-classDiagram
-    direction LR
-    LsCommand -- FileDirEntryList
-    LsCommand -- FileList
-    LsCommand -- LongFormat
-    FileDirEntryList --> FileList
-    LongFormat --> FileList
-    FileList -- MyFile
-
     class FileList{
-      +show(List files)
+      +list_file_dir_entry(List files)
+      +list_long_format_props(List files)
+      +total_blocksize()
       -collect_files(String filepath)
-      -build(List files)
     }
-    class FileDirEntryList{
-      +show(List files)
-      -collect_files(String filepath)
-      -build(List files)
-      -format_single_column(List items)
-      -format_multi_column(List items, Integer col_size) 
-    }
-    class LongFormat{
-      +show(List files)
-      -collect_files(String filepath)
-      -build(List files)
-    }
-    class MyFile{
-      +String argpath
-      +String basename
-      +Integer blocks
-      +String ftype
-      +String permission
-      +Integer nlink
-      +String uname
-      +String gname
-      +Integer size
-      +Time mtime
-    }
+
 ```
