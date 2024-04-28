@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 require 'minitest/autorun'
-require_relative '../lib/file_list_presenter'
+require_relative '../lib/multi_column_output'
+require_relative '../lib/long_format'
 
 class TestLsCommand < Minitest::Test
   def test_ファイル名が表示される
@@ -11,7 +12,7 @@ class TestLsCommand < Minitest::Test
 
     args = {}
     args[:path] = 'test/fixtures/README.md'
-    assert_equal expected, FileListPresenter.new(args).show_file_list
+    assert_equal expected, MultiColumnOutput.new.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
   end
 
   def test_入力したフォルダ配下のファイル名とフォルダ名が表示される
@@ -24,7 +25,7 @@ class TestLsCommand < Minitest::Test
 
     args = {}
     args[:path] = 'test/fixtures'
-    assert_equal expected, FileListPresenter.new(args).show_file_list
+    assert_equal expected, MultiColumnOutput.new.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
   end
 
   def test_入力したフォルダ配下のファイル名とフォルダ名が逆順で表示される
@@ -38,7 +39,7 @@ class TestLsCommand < Minitest::Test
     args = {}
     args[:path] = 'test/fixtures'
     args[:r] = true
-    assert_equal expected, FileListPresenter.new(args).show_file_list
+    assert_equal expected, MultiColumnOutput.new.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
   end
 
   def test_ドットファイルを含めて表示される
@@ -52,7 +53,7 @@ class TestLsCommand < Minitest::Test
     args = {}
     args[:path] = 'test/fixtures'
     args[:a] = true
-    assert_equal expected, FileListPresenter.new(args).show_file_list
+    assert_equal expected, MultiColumnOutput.new.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
   end
 
   def test_ドットファイルを含めて逆順で表示される
@@ -67,7 +68,7 @@ class TestLsCommand < Minitest::Test
     args[:path] = 'test/fixtures'
     args[:r] = true
     args[:a] = true
-    assert_equal expected, FileListPresenter.new(args).show_file_list
+    assert_equal expected, MultiColumnOutput.new.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
   end
 
   def test_プロパティを含めてファイル名が表示される
@@ -78,7 +79,7 @@ class TestLsCommand < Minitest::Test
     args = {}
     args[:path] = 'test/fixtures/README.md'
     args[:l] = true
-    assert_equal expected, FileListPresenter.new(args).show_file_list
+    assert_equal expected, LongFormat.new.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
   end
 
   def test_入力したフォルダ配下のファイル名とフォルダ名がプロパティ含めて表示される
@@ -99,7 +100,7 @@ class TestLsCommand < Minitest::Test
     args = {}
     args[:path] = 'test/fixtures'
     args[:l] = true
-    assert_equal expected, FileListPresenter.new(args).show_file_list
+    assert_equal expected, LongFormat.new.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
   end
 
   def test_入力したフォルダ配下のファイル名とフォルダ名がプロパティ含めて逆順で表示される
@@ -121,7 +122,7 @@ class TestLsCommand < Minitest::Test
     args[:path] = 'test/fixtures'
     args[:r] = true
     args[:l] = true
-    assert_equal expected, FileListPresenter.new(args).show_file_list
+    assert_equal expected, LongFormat.new.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
   end
 
   def test_入力したフォルダ配下のファイル名とフォルダ名がドットファイルとプロパティ含めて表示される
@@ -144,7 +145,7 @@ class TestLsCommand < Minitest::Test
     args[:path] = 'test/fixtures'
     args[:a] = true
     args[:l] = true
-    assert_equal expected, FileListPresenter.new(args).show_file_list
+    assert_equal expected, LongFormat.new.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
   end
 
   def test_入力したフォルダ配下のファイル名とフォルダ名がドットファイルとプロパティ含めて逆順で表示される
@@ -168,6 +169,6 @@ class TestLsCommand < Minitest::Test
     args[:r] = true
     args[:a] = true
     args[:l] = true
-    assert_equal expected, FileListPresenter.new(args).show_file_list
+    assert_equal expected, LongFormat.new.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
   end
 end

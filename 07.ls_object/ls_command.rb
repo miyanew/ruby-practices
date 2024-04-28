@@ -2,7 +2,8 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require_relative 'lib/file_list_presenter'
+require_relative 'lib/multi_column_output'
+require_relative 'lib/long_format'
 
 opt = OptionParser.new
 
@@ -14,4 +15,5 @@ opt.parse!(ARGV)
 
 args[:path] = ARGV[0] || '.'
 
-puts FileListPresenter.new(args).show_file_list
+presenter = args[:l] ? LongFormat.new : MultiColumnOutput.new
+puts presenter.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])

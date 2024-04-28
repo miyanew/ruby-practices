@@ -14,8 +14,8 @@ class FileList
     @files.map { |f| f[key_path] }
   end
 
-  def list_long_format_props
-    @files.map { |f| LONG_FORMAT_ATTRS.each_with_object({}) { |attr, props| props[attr] = f[attr] } }
+  def list_long_format_attrs
+    @files.map { |f| LONG_FORMAT_ATTRS.each_with_object({}) { |attr, display_attrs| display_attrs[attr] = f[attr] } }
   end
 
   def total_blocksize
