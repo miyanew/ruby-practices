@@ -11,7 +11,16 @@ class FileListPresenter
   end
 
   def show_file_list
-    file_list = FileList.new(@opts).prepare_file_list
+    if @opts[:long_format]
+      fl = FileList.new(target_path: @opts[:path], dot_match: @opts[:dot_match])
+      file_list = fl.list_long_format_props
+      file_list = format_long_format_props(file_list)
+      file_list = @opts[:reverse] ? file_list.reverse : file_list
+      file_list = ["total #{fl.total_blocksize}", file_list].flatten if File.directory?(@opts[:path])
+    elsif
+      file_list = FileList.new(target_path: @opts[:path], dot_match: @opts[:dot_match]).list_file_dir_entry
+      file_list = @opts[:reverse] ? file_list.reverse : file_list
+    end
 
     if @opts[:long_format] || file_list.count == 1
       show_single_column(file_list)
@@ -21,6 +30,28 @@ class FileListPresenter
   end
 
   private
+
+  def format_long_format_props(files)
+    nlink_width = files.map { |f| f[:nlink] }.max.to_s.size
+
+    f_list = files.map do |f|
+      {
+        permission: f[:ftype] + f[:permission_str],
+        nlink: f[:nlink].to_s.rjust(nlink_width),
+        uname: f[:uname],
+        gname: f[:gname],
+        size: f[:size].to_s,
+        month: f[:mtime].strftime('%b'),
+        day: f[:mtime].strftime('%e').rjust(2),
+        time: f[:mtime].strftime('%H:%M'),
+        path: files.count > 1 ? f[:basename] : f[:argpath]
+      }
+    end
+
+    f_list.map do |info|
+      "#{info[:permission]} #{info[:nlink]} #{info[:uname]} #{info[:gname]} #{info[:size]} #{info[:month]} #{info[:day]} #{info[:time]} #{info[:path]}"
+    end
+  end
 
   def show_single_column(show_items)
     show_items.join("\n")

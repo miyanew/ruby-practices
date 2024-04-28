@@ -3,28 +3,29 @@
 require 'etc'
 
 class FileList
-  def initialize(opts)
-    @opts = opts
-    @files = collect_files(@opts[:path])
+  LONG_FORMAT_ATTRS = %i[argpath basename blocks ftype permission_str nlink uname gname size mtime].freeze
+
+  def initialize(target_path:, dot_match: false)
+    @files = collect_files(target_path, dot_match)
   end
 
-  def prepare_file_list
-    files = @opts[:reverse] ? @files.reverse : @files
+  def list_file_dir_entry
+    key_path = File.directory?(@files[0][:argpath]) ? :basename : :argpath
+    @files.map { |f| f[key_path] }
+  end
 
-    if @opts[:long_format] && File.directory?(@opts[:path])
-      blocks_sum = files.sum { |f| f[:blocks] }
-      ["total #{blocks_sum}", build_long_format(files)].flatten
-    elsif @opts[:long_format]
-      build_long_format(files)
-    else
-      build_name_list(files, @opts[:path])
-    end
+  def list_long_format_props
+    @files.map { |f| LONG_FORMAT_ATTRS.each_with_object({}) { |attr, props| props[attr] = f[attr] } }
+  end
+
+  def total_blocksize
+    @files.sum { |f| f[:blocks] }
   end
 
   private
 
-  def collect_files(target_path)
-    flags = @opts[:dot_match] ? File::FNM_DOTMATCH : 0
+  def collect_files(target_path, dot_match)
+    flags = dot_match ? File::FNM_DOTMATCH : 0
 
     if File.directory?(target_path)
       Dir.glob(File.join(target_path, '*'), flags).map do |entry_name|
@@ -35,7 +36,7 @@ class FileList
     end
   end
 
-  # blocks: デフォルトブロックサイズの差分を補正。File::Stat 512byte、Linux 1024byte
+  # blocks: デフォルトブロックサイズ差分を/2で補正。File::Stat 512byte、Linux 1024byte
   def collect_file(target_path)
     stat = File::Stat.new(target_path)
     {
@@ -72,27 +73,5 @@ class FileList
     }
 
     perm_oct.chars.map { |p_oct| permissions[p_oct] }.join
-  end
-
-  def build_long_format(files)
-    nlink_width = files.map { |file| file[:nlink] }.max.to_s.size
-
-    files.map do |f|
-      [
-        f[:ftype] + f[:permission_str],
-        f[:nlink].to_s.rjust(nlink_width),
-        f[:uname],
-        f[:gname],
-        f[:size].to_s,
-        f[:mtime].strftime('%b'),
-        f[:mtime].strftime('%e').rjust(2),
-        f[:mtime].strftime('%H:%M'),
-        files.count > 1 ? f[:basename] : f[:argpath]
-      ].join(' ')
-    end
-  end
-
-  def build_name_list(files, target_path)
-    File.directory?(target_path) ? files.map { |f| f[:basename] } : files.map { |f| f[:argpath] }
   end
 end
