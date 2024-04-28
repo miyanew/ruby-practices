@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require_relative 'file_list_preparer'
+require_relative 'file_list'
 
 class FileListPresenter
   MAX_COL_SIZE = 3
@@ -11,7 +11,7 @@ class FileListPresenter
   end
 
   def show_file_list
-    file_list = FileListPreparer.new(@opts).prepare_file_list
+    file_list = FileList.new(@opts).prepare_file_list
 
     if @opts[:long_format] || file_list.count == 1
       show_single_column(file_list)
