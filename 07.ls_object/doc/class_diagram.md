@@ -5,24 +5,23 @@ title: my_ls
 
 classDiagram
     direction LR
-    LsCommand -- MultiColumnOutput
+    LsCommand -- MultiColumnFormat
     LsCommand -- LongFormat
-    MultiColumnOutput -- FileList
-    LongFormat -- FileList
 
-    class MultiColumnOutput{
-      +show(String filepath, Boolean reverse)
+    class LsCommand{
+      +run(String target_path, List options)
+      -collect_dir_entry_paths(String target_path, Boolean dot_match, Boolean reverse)
+    }
+    class MultiColumnFormat{
+      +show(List dir_entry_paths)
+      -list_file_dir_names(List dir_entry_paths)
       -format_multi_column(List items, Integer col_size)
     }
     class LongFormat{
-      +show(String filepath, Boolean reverse)
+      +show(List dir_entry_paths)
+      -list_long_format_attrs(List dir_entry_paths)
       -format_long_format(List items, Integer width)
-    }
-    class FileList{
-      +list_file_dir_entry(List files)
-      +list_long_format_props(List files)
-      +total_blocksize()
-      -collect_files(String filepath)
+      -total_blocksize()
     }
 
 ```
