@@ -2,18 +2,28 @@
 # frozen_string_literal: true
 
 require 'optparse'
-require_relative 'lib/multi_column_output'
+require_relative 'lib/multi_column_format'
 require_relative 'lib/long_format'
 
-opt = OptionParser.new
+def main(opts)
+  dir_entry_paths = collect_dir_entry_paths(opts[:path], opts[:a])
+  presenter = opts[:l] ? LongFormat : MultiColumnFormat
+  presenter.new(dir_entry_paths).show(opts[:r])
+end
 
-args = {}
-opt.on('-a') { |v| args[:a] = v }
-opt.on('-r') { |v| args[:r] = v }
-opt.on('-l') { |v| args[:l] = v }
-opt.parse!(ARGV)
+def collect_dir_entry_paths(target_path, dot_match)
+  flags = dot_match ? File::FNM_DOTMATCH : 0
+  File.directory?(target_path) ? Dir.glob(File.join(target_path, '*'), flags) : [target_path]
+end
 
-args[:path] = ARGV[0] || '.'
+if $PROGRAM_NAME == __FILE__
+  opt = OptionParser.new
+  args = {}
+  opt.on('-a') { |v| args[:a] = v }
+  opt.on('-r') { |v| args[:r] = v }
+  opt.on('-l') { |v| args[:l] = v }
+  opt.parse!(ARGV)
+  args[:path] = ARGV[0] || '.'
 
-presenter = args[:l] ? LongFormat.new : MultiColumnOutput.new
-puts presenter.show(target_path: args[:path], dot_match: args[:a], reverse: args[:r])
+  main(args)
+end
