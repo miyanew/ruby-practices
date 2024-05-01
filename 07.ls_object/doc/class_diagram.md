@@ -9,18 +9,17 @@ classDiagram
     LsCommand -- LongFormat
 
     class LsCommand{
-      +run(String target_path, List options)
-      -collect_dir_entry_paths(String target_path, Boolean dot_match, Boolean reverse)
+      +main(String target_path, List options)
+      -collect_dir_entry_paths(String target_path, Boolean dot_match)
     }
     class MultiColumnFormat{
-      +show(List dir_entry_paths)
-      -list_file_dir_names(List dir_entry_paths)
+      +show(List dir_entry_paths, Boolean reverse)
+      -collect_entry_names(List dir_entry_paths)
       -format_multi_column(List items, Integer col_size)
     }
     class LongFormat{
-      +show(List dir_entry_paths)
-      -list_long_format_attrs(List dir_entry_paths)
-      -format_long_format(List items, Integer width)
+      +show(List dir_entry_paths, Boolean reverse)
+      -format_long_format(List dir_entry_paths, Integer width)
       -total_blocksize()
     }
 
