@@ -3,14 +3,14 @@
 require 'etc'
 
 class LongFormat
-  def initialize(dir_entry_paths)
+  def initialize(dir_entry_paths, argument_path)
     @dir_entry_paths = dir_entry_paths
+    @argument_path = argument_path
   end
 
-  def show(reverse)
-    sorted_entry_paths = reverse ? @dir_entry_paths.reverse : @dir_entry_paths
-    formatted_lines = format_long_format(sorted_entry_paths)
-    formatted_lines = prepend_total_blocks(formatted_lines) if File.directory?(@dir_entry_paths[0])
+  def show()
+    formatted_lines = format_long_format(@dir_entry_paths)
+    formatted_lines = prepend_total_blocks(formatted_lines) if File.directory?(@argument_path)
     formatted_lines.join("\n")
   end
 

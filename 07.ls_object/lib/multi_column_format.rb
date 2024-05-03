@@ -4,20 +4,18 @@ class MultiColumnFormat
   MAX_COL_SIZE = 3
   WIDTH_BETWEEN_ITMES = 2
 
-  def initialize(dir_entry_paths)
-    @entry_names = collect_entry_names(dir_entry_paths)
+  def initialize(dir_entry_paths, argument_path)
+    @entry_names = collect_entry_names(dir_entry_paths, argument_path)
   end
 
-  def show(reverse)
-    sorted_entry_names = reverse ? @entry_names.reverse : @entry_names
-    formated_lines = format_multi_column(sorted_entry_names, MAX_COL_SIZE)
+  def show()
+    formated_lines = format_multi_column(@entry_names, MAX_COL_SIZE)
     formated_lines.join("\n")
   end
 
   private
 
-  def collect_entry_names(dir_entry_paths)
-    argument_path = dir_entry_paths[0]
+  def collect_entry_names(dir_entry_paths, argument_path)
     dir_entry_paths.map { |path| File.file?(argument_path) ? path : File.basename(path) }
   end
 

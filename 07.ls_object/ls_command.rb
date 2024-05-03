@@ -7,8 +7,9 @@ require_relative 'lib/long_format'
 
 def main(opts)
   dir_entry_paths = collect_dir_entry_paths(opts[:path], opts[:a])
+  sorted_entry_paths = opts[:r] ? dir_entry_paths.reverse : dir_entry_paths
   presenter = opts[:l] ? LongFormat : MultiColumnFormat
-  presenter.new(dir_entry_paths).show(opts[:r])
+  presenter.new(sorted_entry_paths, opts[:path]).show()
 end
 
 def collect_dir_entry_paths(target_path, dot_match)
