@@ -4,19 +4,20 @@ class MultiColumnFormat
   MAX_COL_SIZE = 3
   WIDTH_BETWEEN_ITMES = 2
 
-  def initialize(dir_entry_paths, argument_path)
-    @entry_names = collect_entry_names(dir_entry_paths, argument_path)
+  def initialize(dir_entry_paths, base_path, max_col_size = MAX_COL_SIZE)
+    @entry_names = collect_entry_names(dir_entry_paths, base_path)
+    @max_col_size = max_col_size
   end
 
   def show()
-    formated_lines = format_multi_column(@entry_names, MAX_COL_SIZE)
+    formated_lines = format_multi_column(@entry_names, @max_col_size)
     formated_lines.join("\n")
   end
 
   private
 
-  def collect_entry_names(dir_entry_paths, argument_path)
-    dir_entry_paths.map { |path| File.file?(argument_path) ? path : File.basename(path) }
+  def collect_entry_names(dir_entry_paths, base_path)
+    dir_entry_paths.map { |path| File.file?(base_path) ? path : File.basename(path) }
   end
 
   def format_multi_column(show_items, col_size_max)
